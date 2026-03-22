@@ -6,6 +6,7 @@ This script connects After Effects to SeedVR2 (ByteDance), using the same pipeli
 
 Works on single images and PNG sequences.
 
+![demo1](01.gif)
 ![demo1](01.png)
 ![demo2](02.png)
 
