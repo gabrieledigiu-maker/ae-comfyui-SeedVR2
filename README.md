@@ -177,6 +177,6 @@ The underlying models and node have their own licenses:
 
 If you find this useful and want to support the work — thank you! ☕
 
-**[Buy me a coffee → PayPal](https://paypal.me/digigabbo)**
+**[![Support](https://img.shields.io/badge/Support-PayPal-blue)](https://paypal.me/digigabbo)**
 
 Any amount is appreciated and helps keep these tools coming.
