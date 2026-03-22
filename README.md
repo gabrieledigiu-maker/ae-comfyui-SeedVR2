@@ -2,9 +2,7 @@
 
 **Run SeedVR2 AI upscaling directly inside After Effects — no switching apps, no manual exporting.**
 
-This script connects After Effects to SeedVR2 (ByteDance), using the same pipeline as the [ComfyUI-SeedVR2_VideoUpscaler](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) node by numz & AInVFX. Select a layer, click a button, get a high-quality upscaled result back in your timeline — GPU accelerated.
-
-Works on single images and PNG sequences.
+Select a layer, click Upscale, get a high-quality result back in your timeline. Works on single images and PNG sequences. Uses the same pipeline as the [ComfyUI-SeedVR2_VideoUpscaler](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) node by numz & AInVFX.
 
 ![demo2](02.png)
 ![demo1](01.png)
@@ -15,13 +13,14 @@ Works on single images and PNG sequences.
 
 ## Features
 
-- ✅ One-click AI upscaling from inside AE
+- ✅ One-click AI upscaling from inside After Effects
 - ✅ GPU accelerated with BlockSwap — runs on 12-16GB VRAM
 - ✅ Supports single images and PNG sequences
-- ✅ Same pipeline as the ComfyUI node (4 phases: encode → DiT → decode → post-process)
+- ✅ Same 4-phase pipeline as the ComfyUI node (encode → DiT → decode → post-process)
 - ✅ Color correction (LAB, Wavelet, HSV, AdaIN)
-- ✅ Configurable BlockSwap, tiling, and resolution
-- ✅ Output saved next to your AE project, auto-imported into the timeline
+- ✅ Video and Image presets for quick setup
+- ✅ Stop button to cancel processing at any time
+- ✅ Output auto-imported into the timeline
 
 ---
 
@@ -30,61 +29,65 @@ Works on single images and PNG sequences.
 | Requirement | Notes |
 |---|---|
 | After Effects | CC 2019 or later |
-| ComfyUI | Already installed and working |
-| ComfyUI-SeedVR2_VideoUpscaler | Node installed |
+| ComfyUI | Installed and working |
+| ComfyUI-SeedVR2_VideoUpscaler | Custom node installed in ComfyUI |
 | SeedVR2 models | Downloaded in `models/SEEDVR2/` |
-| Python | The one bundled with ComfyUI |
-| GPU (NVIDIA CUDA) | Required — 12GB+ VRAM recommended |
+| GPU (NVIDIA CUDA) | 12GB+ VRAM recommended |
 | OS | Windows ✅ tested / macOS ⚠ not tested |
 
-### Required models (auto-downloaded by ComfyUI on first use)
+> **Note:** You do **not** need ComfyUI running. Only the installation is required — the script imports the node's Python code directly.
 
-| Model | Size | Notes |
+### Required Models
+
+Download these via ComfyUI on first use, or manually place in `ComfyUI/models/SEEDVR2/`:
+
+| Model | Size | Role |
 |---|---|---|
-| `seedvr2_ema_7b_fp16.safetensors` | ~14GB | DiT — best quality |
-| `ema_vae_fp16.safetensors` | ~800MB | VAE — required |
+| `seedvr2_ema_7b_fp16.safetensors` | ~14GB | DiT (main upscaler) |
+| `ema_vae_fp16.safetensors` | ~800MB | VAE (encoder/decoder) |
 
-FP8 and GGUF variants also supported — place them in `models/SEEDVR2/`.
+FP8 and GGUF variants are also supported.
 
 ---
 
 ## Installation
 
-### Step 1 — Install the ComfyUI node
+### 1 — Install the ComfyUI node
 
 ```bash
 cd ComfyUI/custom_nodes
 git clone https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git
 ```
 
-Run ComfyUI once and use the node to download the models automatically.
+Then open ComfyUI once to let it download the models automatically, or download them manually.
 
-### Step 2 — Copy the script files
+### 2 — Copy the script files
 
-Copy the **`server/` folder** and **`jsx/` folder** to your After Effects Scripts directory:
+You need only **two files**. Copy them to your After Effects Scripts folder:
 
 **Windows:**
 ```
 C:\Program Files\Adobe\Adobe After Effects <version>\Support Files\Scripts\
 ```
 
-The JSX panel must go in the **ScriptUI Panels** subfolder so it appears under **Window** in AE:
-
+**File placement:**
 ```
 Scripts/
 ├── ScriptUI Panels/
-│   └── SeedVR2_AE.jsx        ← goes here
+│   └── SeedVR2_AE.jsx       ← Panel (appears under Window menu in AE)
 └── server/
-    └── seedvr2_process.py
+    └── seedvr2_process.py   ← Python backend
 ```
 
-### Step 3 — Allow scripts to write files
+> **Important:** `SeedVR2_AE.jsx` must go in `ScriptUI Panels/` — not in the root `Scripts/` folder. This is what makes it appear under **Window** in After Effects.
 
-In After Effects:  
-**Edit → Preferences → Scripting & Expressions**  
+### 3 — Allow scripts to write files
+
+In After Effects:
+**Edit → Preferences → Scripting & Expressions**
 → Enable **"Allow Scripts to Write Files and Access Network"**
 
-### Step 4 — Open the panel
+### 4 — Open the panel
 
 **Window → SeedVR2_AE.jsx**
 
@@ -92,71 +95,73 @@ In After Effects:
 
 ## Usage
 
-### Single image
+### Single Image
 
 1. Select an image layer in your composition
-2. Set ComfyUI path, DiT model, VAE model
-3. Set max resolution (e.g. 2000)
+2. Click **🖼 Single Image** preset (or set parameters manually)
+3. Set ComfyUI path, verify models are detected
 4. Click **▶ Upscale**
-5. The upscaled result appears as a new layer
+5. The upscaled result appears as a new layer automatically
 
-Output is saved in a `SeedVR2/` subfolder next to your `.aep` project file.
+### PNG Sequence
 
-### PNG sequence
+1. Export your video as PNG sequence from AE render queue (Format: PNG Sequence)
+2. Import the sequence: **File → Import** → check "PNG Sequence"
+3. Add to comp and select the layer
+4. Click **🎬 Video** preset
+5. Click **▶ Upscale** — all frames processed in batches, result auto-imported
 
-1. Import your PNG sequence into AE (`File → Import`, PNG Sequence)
-2. Add it to a comp and select the layer
-3. Click **▶ Upscale**
-4. All frames are processed — model loads once, processes all frames
-5. The resulting sequence is automatically imported back
+> **Video files (.mp4, .mov) are not supported directly.** Export as PNG sequence first.
 
 ---
 
 ## Parameters
 
-| Parameter | Description |
-|---|---|
-| **ComfyUI root** | Path to your ComfyUI installation folder |
-| **DiT model** | The diffusion transformer model (auto-detected from `models/SEEDVR2/`) |
-| **VAE model** | The encoder/decoder model (auto-detected) |
-| **Max resolution** | Maximum output resolution for any edge (default: 2000) |
-| **Color correction** | LAB (recommended), Wavelet, HSV, AdaIN, or None |
-| **Seed** | Random seed for reproducible results |
-| **Tile size** | VAE tile size — lower = less VRAM |
-| **Tiling** | Enable tiled encode/decode for high-res images |
-| **Block swap** | Transformer blocks offloaded to CPU (default: 35) |
-| **Offload device** | `none` = fastest, `cpu` = safer on low VRAM |
-
-### BlockSwap guide
-
-| VRAM | Block swap | Offload device |
+| Parameter | Description | Default |
 |---|---|---|
-| 8GB | 35-36 | cpu |
-| 12-16GB | 30-35 | cpu |
+| **ComfyUI root** | Path to your ComfyUI installation | Auto |
+| **DiT model** | Diffusion transformer (auto-detected from `models/SEEDVR2/`) | 7B model |
+| **VAE model** | Encoder/decoder (auto-detected) | `ema_vae_fp16` |
+| **Max resolution** | Max output size for any edge (px) | 1920 |
+| **Color correction** | LAB / Wavelet / HSV / AdaIN / None | LAB |
+| **Batch size** | Frames per batch (must be 4n+1: 1,5,9,13…) | 33 |
+| **Uniform batch** | Pad final batch to avoid artifacts | ✓ |
+| **Temporal overlap** | Overlap frames between batches | 4 |
+| **Seed** | Random seed for reproducibility | 42 |
+| **Enc tile size** | VAE encode tile size | 1024 |
+| **Dec tile size** | VAE decode tile size | 768 |
+| **Block swap** | Transformer blocks offloaded to CPU (0–36) | 35 |
+| **Offload device** | Where to offload models between phases | cpu |
+| **Attention** | Attention backend | auto |
+
+### Presets
+
+| Preset | Batch | Uniform | Overlap |
+|---|---|---|---|
+| 🎬 Video | 33 | ✓ | 4 |
+| 🖼 Single Image | 1 | ✗ | 0 |
+
+### Block Swap guide
+
+| VRAM | Block swap | Offload |
+|---|---|---|
+| 8GB | 35–36 | cpu |
+| 12–16GB | 30–35 | cpu |
 | 24GB+ | 0 | none |
 
 ---
 
-## How it works
+## How it Works
 
-The script imports the SeedVR2 pipeline directly from your ComfyUI custom node installation — no code duplication, no separate model files. It runs the same 4-phase pipeline:
+The script imports SeedVR2's pipeline directly from your ComfyUI custom node installation — no code duplication, no separate model download.
 
+**Pipeline (4 phases):**
 1. **VAE Encode** — compress input frames to latent space
 2. **DiT Upscale** — one-step diffusion upscaling
 3. **VAE Decode** — reconstruct high-resolution frames
 4. **Post-process** — color correction and assembly
 
-After Effects ExtendScript launches Python invisibly via a `.bat` + `.vbs` launcher, polls a `status.json` file for progress, and imports the result when done.
-
----
-
-## Video not supported directly
-
-Video layers (`.mp4`, `.mov`) are not supported. Export as PNG sequence first:
-
-1. Select video layer → **File → Export → Add to Render Queue**
-2. Output Module → **Format: PNG Sequence**
-3. Render → import the sequence → run this script
+**Launcher:** AE ExtendScript launches Python invisibly via a temporary `.bat` + `.vbs` file, polls a `status.json` for progress updates every 2 seconds, and imports the result when done. No server, no ports, no dependencies beyond what ComfyUI already has.
 
 ---
 
@@ -172,7 +177,7 @@ The underlying models and node have their own licenses:
 
 ## Credits
 
-- [ComfyUI-SeedVR2_VideoUpscaler](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) by **numz** & **AInVFX** — the ComfyUI node this script is built on
+- [ComfyUI-SeedVR2_VideoUpscaler](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) by **numz** & **AInVFX** — the ComfyUI node this script bridges
 - [SeedVR2](https://github.com/ByteDance-Seed/SeedVR) by **ByteDance Seed** — the original model
 - AE script by **@digigabbo**
 
