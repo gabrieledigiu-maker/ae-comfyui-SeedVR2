@@ -183,6 +183,12 @@ The underlying models and node have their own licenses:
 
 ---
 
+## Issues
+
+If something doesn’t work on your setup, feel free to open an Issue with details. I can’t promise support, but it may help identify common problems.
+
+---
+
 ## Support
 
 If you find this useful and want to support the work — thank you! ☕
