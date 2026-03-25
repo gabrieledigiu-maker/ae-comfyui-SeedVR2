@@ -183,9 +183,20 @@ The underlying models and node have their own licenses:
 
 ---
 
-## Issues
+## Issues / Bug Reports
 
-If something doesn’t work on your setup, feel free to open an Issue with details. I can’t promise support, but it may help identify common problems.
+If something doesn’t work on your setup, feel free to open an Issue in this repository.
+
+This is a small personal workflow tool and I don’t provide support, but reporting problems can help identify common issues and improve the script over time.
+
+If you open an Issue, please try to include:
+
+- Operating system
+- After Effects version
+- ComfyUI version
+- GPU
+- Whether you're using images or sequences
+- Any error message or screenshot
 
 ---
 
